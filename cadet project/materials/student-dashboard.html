@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materials Management System - Student Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 70px;
+            --bg-color: #f5f7fa;
+            --text-color: #333;
+            --card-bg: white;
+            --header-bg: var(--secondary);
+            --sidebar-bg: white;
+            --sidebar-text: var(--dark);
+            --border-color: #ddd;
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --card-bg: #2d2d2d;
+            --header-bg: #1e1e1e;
+            --sidebar-bg: #252525;
+            --sidebar-text: #f0f0f0;
+            --border-color: #444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-role {
+            background-color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-right: 1rem;
+            font-size: 0.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        nav ul li a i {
+            margin-right: 5px;
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+        
+        /* Theme Controls */
+        .theme-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 99;
+            width: 200px;
+            transform: translateX(150px);
+            transition: transform 0.3s ease;
+        }
+        
+        .theme-controls:hover {
+            transform: translateX(0);
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            left: -40px;
+            top: 15px;
+            background: var(--card-bg);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .color-option {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            padding: 1.5rem 1rem;
+            height: calc(100vh - 68px);
+            transition: all 0.3s ease;
+            position: sticky;
+            top: 68px;
+            color: var(--sidebar-text);
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+        
+        .sidebar-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .sidebar.collapsed h3 {
+            display: none;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            color: var(--sidebar-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-menu a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .sidebar.collapsed .sidebar-menu span {
+            display: none;
+        }
+        
+        .sidebar.collapsed .sidebar-menu a i {
+            margin-right: 0;
+        }
+        
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            height: calc(100vh - 68px);
+        }
+        
+        /* Page content */
+        .page-content {
+            display: none;
+        }
+        
+        .page-content.active {
+            display: block;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card-header {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* Table Styles */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: rgba(0,0,0,0.05);
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+        
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+        }
+        
+        .view-btn {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .view-btn:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+        
+        .view-btn:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .view-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Material Grid */
+        .material-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .material-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .material-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .material-img {
+            height: 180px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+        
+        .material-img i {
+            font-size: 3rem;
+        }
+        
+        .material-details {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 200px;
+        }
+        
+        .material-id {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .material-status {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Status badges */
+        .badge {
+            padding: 0.35rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .badge-pending {
+            background-color: #ffeaa7;
+            color: #d35400;
+        }
+        
+        .badge-registered {
+            background-color: #d6eaf8;
+            color: #2980b9;
+        }
+        
+        .badge-assigned {
+            background-color: #d1f2eb;
+            color: #27ae60;
+        }
+        
+        .badge-checked_out {
+            background-color: #fdebd0;
+            color: #e67e22;
+        }
+        
+        .badge-sent_out {
+            background-color: #e8e8e8;
+            color: #7f8c8d;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        /* Form Styles */
+        .form-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        /* History Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.4rem;
+            top: 0.25rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+        
+        .timeline-content {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+            
+            .sidebar.collapsed {
+                width: 70px;
+                position: fixed;
+                top: 68px;
+                left: 0;
+                z-index: 99;
+                height: calc(100vh - 68px);
+            }
+            
+            .content {
+                margin-left: 0;
+                height: auto;
+            }
+            
+            .sidebar.collapsed ~ .content {
+                margin-left: 70px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .material-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+            }
+            
+            nav ul li {
+                margin: 0.5rem;
+            }
+            
+            .theme-controls {
+                bottom: 10px;
+                right: 10px;
+            }
+            
+            .header-content {
+                flex-wrap: wrap;
+            }
+            
+            .user-info {
+                order: 3;
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-boxes"></i> <span>Materials Management</span>
+            </div>
+            <div class="user-info">
+                <span class="user-role">Student</span>
+                <span>Sarah Johnson (S12346)</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                    <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="sidebar-toggle">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <h3>Student Menu</h3>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                <li><a href="#" class="nav-link" data-page="materials"><i class="fas fa-box"></i> <span>My Materials</span></a></li>
+                <li><a href="#" class="nav-link" data-page="history"><i class="fas fa-history"></i> <span>History</span></a></li>
+                <li><a href="#" class="nav-link" data-page="send-out"><i class="fas fa-file-export"></i> <span>Send Out Request</span></a></li>
+                <li><a href="#" class="nav-link" data-page="help"><i class="fas fa-question-circle"></i> <span>Help</span></a></li>
+            </ul>
+            
+            <h3 style="margin-top: 2rem;">Quick Actions</h3>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="nav-link" data-page="search"><i class="fas fa-search"></i> <span>Find Material</span></a></li>
+                <li><a href="#"><i class="fas fa-file-download"></i> <span>Download History</span></a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> <span>Contact Admin</span></a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <!-- Dashboard Page -->
+            <div class="page-content active" id="dashboard">
+                <h1>Student Portal Dashboard</h1>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Materials Assigned to Me</h3>
+                            <i class="fas fa-box" style="color: var(--primary);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">5</div>
+                            <p>Currently in my possession</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Pending Returns</h3>
+                            <i class="fas fa-calendar-check" style="color: var(--warning);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">2</div>
+                            <p>Due in the next 7 days</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Materials Sent Out</h3>
+                            <i class="fas fa-truck" style="color: var(--danger);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">3</div>
+                            <p>Outside institution</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Activity</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <h4>Laptop Checked Out</h4>
+                                    <p>You checked out a Dell Laptop on October 15, 2023</p>
+                                    <small>Due: November 15, 2023</small>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <h4>Microscope Assigned</h4>
+                                    <p>You were assigned a microscope for Biology lab on October 10, 2023</p>
+                                    <small>Due: October 24, 2023</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Materials Page -->
+            <div class="page-content" id="materials">
+                <h1>My Materials</h1>
+                
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i> Grid View</button>
+                    <button class="view-btn" data-view="table"><i class="fas fa-list"></i> Table View</button>
+                </div>
+                
+                <!-- Grid View -->
+                <div class="material-grid" id="grid-view">
+                    <div class="material-card">
+                        <div class="material-img">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <div class="material-details">
+                            <h3>Dell Laptop XPS 15</h3>
+                            <p class="material-id">ID: MAT-001245</p>
+                            <p>High-performance laptop for engineering students</p>
+                            <div class="material-status">
+                                <span class="badge badge-assigned">Assigned</span>
+                                <span>Due: 2023-11-15</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-card">
+                        <div class="material-img">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <div class="material-details">
+                            <h3>Advanced Microscope</h3>
+                            <p class="material-id">ID: MAT-001238</p>
+                            <p>Biology lab microscope with 1000x magnification</p>
+                            <div class="material-status">
+                                <span class="badge badge-assigned">Assigned</span>
+                                <span>Due: 2023-10-24</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-card">
+                        <div class="material-img">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="material-details">
+                            <h3>Research Books</h3>
+                            <p class="material-id">ID: MAT-001201</p>
+                            <p>Collection of advanced physics research books</p>
+                            <div class="material-status">
+                                <span class="badge badge-checked_out">Checked Out</span>
+                                <span>Due: 2023-10-19</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Table View -->
+                <div class="table-container" id="table-view" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Material ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Due Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="material-id">MAT-001245</td>
+                                <td>Dell Laptop XPS 15</td>
+                                <td>High-performance laptop for engineering students</td>
+                                <td><span class="badge badge-assigned">Assigned</span></td>
+                                <td>2023-11-15</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 0.35rem 0.5rem;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="material-id">MAT-001238</td>
+                                <td>Advanced Microscope</td>
+                                <td>Biology lab microscope with 1000x magnification</td>
+                                <td><span class="badge badge-assigned">Assigned</span></td>
+                                <td>2023-10-24</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 0.35rem 0.5rem;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="material-id">MAT-001201</td>
+                                <td>Research Books</td>
+                                <td>Collection of advanced physics research books</td>
+                                <td><span class="badge badge-checked_out">Checked Out</span></td>
+                                <td>2023-10-19</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 0.35rem 0.5rem;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- History Page -->
+            <div class="page-content" id="history">
+                <h1>Material History</h1>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Your Material History</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <h4>Chemistry Lab Set Returned</h4>
+                                    <p>You returned the chemistry lab set on October 5, 2023</p>
+                                    <small>October 5, 2023</small>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <h4>Engineering Toolkit Checked Out</h4>
+                                    <p>You checked out the engineering toolkit on September 20, 2023</p>
+                                    <small>September 20, 2023 - October 5, 2023</small>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <h4>Textbooks Returned</h4>
+                                    <p>You returned 3 textbooks on September 15, 2023</p>
+                                    <small>September 15, 2023</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Send Out Request Page -->
+            <div class="page-content" id="send-out">
+                <h1>Send Material Out Request</h1>
+                
+                <div class="form-container">
+                    <h2>Request to Send Material Outside Institution</h2>
+                    <form id="send-out-form">
+                        <div class="form-group">
+                            <label for="material">Select Material</label>
+                            <select id="material" required>
+                                <option value="">Select a material</option>
+                                <option value="MAT-001245">MAT-001245 - Dell Laptop XPS 15</option>
+                                <option value="MAT-001238">MAT-001238 - Advanced Microscope</option>
+                                <option value="MAT-001201">MAT-001201 - Research Books</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="purpose">Purpose</label>
+                            <select id="purpose" required>
+                                <option value="">Select purpose</option>
+                                <option value="research">Research</option>
+                                <option value="project">Project Work</option>
+                                <option value="repair">Repair/Maintenance</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="destination">Destination</label>
+                            <input type="text" id="destination" placeholder="Where will the material be taken?" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="duration">Expected Duration (days)</label>
+                            <input type="number" id="duration" min="1" max="30" value="7" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Additional Notes</label>
+                            <textarea id="notes" rows="3" placeholder="Any additional information"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Page -->
+            <div class="page-content" id="help">
+                <h1>Help & Support</h1>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Frequently Asked Questions</h2>
+                    </div>
+                    <div class="card-body">
+                        <h3>How do I request a material?</h3>
+                        <p>To request a material, navigate to the "My Materials" section and click on the "Request" button next to the item you need.</p>
+                        
+                        <h3>What is the maximum duration for checking out materials?</h3>
+                        <p>The standard checkout period is 14 days, but this may vary depending on the material type and availability.</p>
+                        
+                        <h3>How can I renew a material?</h3>
+                        <p>You can renew materials from your "My Materials" page if no one else has requested them. Renewals are subject to approval.</p>
+                        
+                        <h3>What should I do if a material is damaged?</h3>
+                        <p>Please report any damaged materials immediately to the administration office and do not attempt to repair them yourself.</p>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-top: 2rem;">
+                    <div class="card-header">
+                        <h2>Contact Support</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>If you need further assistance, please contact the materials management office:</p>
+                        <ul>
+                            <li>Email: materials-support@institution.edu</li>
+                            <li>Phone: (555) 123-4567</li>
+                            <li>Office Hours: Monday-Friday, 8:00 AM - 5:00 PM</li>
+                            <li>Location: Building A, Room 105</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Page -->
+            <div class="page-content" id="search">
+                <h1>Find Material</h1>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Search Materials</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input type="text" placeholder="Search by name, category, or ID...">
+                        </div>
+                        <button class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-top: 2rem;">
+                    <div class="card-header">
+                        <h2>Available Materials</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>Use the search above to find available materials. You can filter by category, status, or availability.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Controls -->
+    <div class="theme-controls">
+        <div class="theme-toggle">
+            <i class="fas fa-palette"></i>
+        </div>
+        <h4>Theme Settings</h4>
+        <div class="theme-option">
+            <label>
+                <input type="checkbox" id="dark-mode-toggle"> Dark Mode
+            </label>
+        </div>
+        
+        <h4 style="margin-top: 15px;">Header Color</h4>
+        <div class="color-options">
+            <div class="color-option" style="background-color: #2c3e50;" data-target="header" data-color="#2c3e50"></div>
+            <div class="color-option" style="background-color: #9b59b6;" data-target="header" data-color="#9b59b6"></div>
+            <div class="color-option" style="background-color: #1abc9c;" data-target="header" data-color="#1abc9c"></div>
+            <div class="color-option" style="background-color: #e74c3c;" data-target="header" data-color="#e74c3c"></div>
+        </div>
+        
+        <h4 style="margin-top: 15px;">Sidebar Color</h4>
+        <div class="color-options">
+            <div class="color-option" style="background-color: #ffffff;" data-target="sidebar" data-color="#ffffff"></div>
+            <div class="color-option" style="background-color: #f1f5f9;" data-target="sidebar" data-color="#f1f5f9"></div>
+            <div class="color-option" style="background-color: #252525;" data-target="sidebar" data-color="#252525"></div>
+            <div class="color-option" style="background-color: #1a1a1a;" data-target="sidebar" data-color="#1a1a1a"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle functionality
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const sidebarIcon = document.querySelector('.sidebar-toggle i');
+            
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                
+                if (sidebar.classList.contains('collapsed')) {
+                    sidebarIcon.classList.remove('fa-chevron-left');
+                    sidebarIcon.classList.add('fa-chevron-right');
+                } else {
+                    sidebarIcon.classList.remove('fa-chevron-right');
+                    sidebarIcon.classList.add('fa-chevron-left');
+                }
+            });
+            
+            // View toggle functionality
+            const viewButtons = document.querySelectorAll('.view-btn');
+            const gridView = document.getElementById('grid-view');
+            const tableView = document.getElementById('table-view');
+            
+            if (viewButtons.length > 0) {
+                viewButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const viewType = this.getAttribute('data-view');
+                        
+                        // Toggle active class
+                        viewButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // Show the selected view
+                        if (viewType === 'grid') {
+                            if (gridView) gridView.style.display = 'grid';
+                            if (tableView) tableView.style.display = 'none';
+                        } else {
+                            if (gridView) gridView.style.display = 'none';
+                            if (tableView) tableView.style.display = 'block';
+                        }
+                    });
+                });
+            }
+            
+            // Navigation functionality
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pageContents = document.querySelectorAll('.page-content');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    
+                    // Update active navigation link
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show the corresponding page content
+                    pageContents.forEach(page => page.classList.remove('active'));
+                    document.getElementById(pageId).classList.add('active');
+                });
+            });
+            
+            // Form submission
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Form submitted successfully!');
+                });
+            });
+            
+            // Theme toggle functionality
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('change', function() {
+                    document.body.classList.toggle('dark-mode', this.checked);
+                });
+            }
+            
+            // Color option functionality
+            const colorOptions = document.querySelectorAll('.color-option');
+            
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    const color = this.getAttribute('data-color');
+                    
+                    if (target === 'header') {
+                        document.documentElement.style.setProperty('--header-bg', color);
+                    } else if (target === 'sidebar') {
+                        document.documentElement.style.setProperty('--sidebar-bg', color);
+                        
+                        // Adjust text color based on background brightness
+                        const rgb = parseInt(color.substring(1), 16);
+                        const r = (rgb >> 16) & 0xff;
+                        const g = (rgb >> 8) & 0xff;
+                        const b = (rgb >> 0) & 0xff;
+                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                        
+                        if (brightness > 125) {
+                            document.documentElement.style.setProperty('--sidebar-text', '#333');
+                        } else {
+                            document.documentElement.style.setProperty('--sidebar-text', '#f0f0f0');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

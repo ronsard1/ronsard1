@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Materials Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --sidebar-width: 250px;
+            --header-bg: var(--secondary);
+            --sidebar-bg: #ffffff;
+            --sidebar-text: #333333;
+            --content-bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+
+        .dark-mode {
+            --header-bg: #1a1a1a;
+            --sidebar-bg: #252525;
+            --sidebar-text: #f0f0f0;
+            --content-bg: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #f0f0f0;
+            --border-color: #444444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--content-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-role {
+            background-color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-right: 1rem;
+            font-size: 0.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        nav ul li a i {
+            margin-right: 5px;
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+        
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            margin-top: 68px; /* Header height */
+            min-height: calc(100vh - 68px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 68px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            z-index: 90;
+        }
+        
+        .sidebar-content {
+            padding: 1.5rem 1rem;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            color: var(--sidebar-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-menu a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Content Area */
+        .content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+        }
+        
+        /* Page content */
+        .page-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .page-content.active {
+            display: block;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* Form Styles */
+        .form-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: rgba(0,0,0,0.05);
+            font-weight: 600;
+        }
+        
+        tr {
+            transition: background-color 0.3s;
+        }
+        
+        tr:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+        
+        /* Status badges */
+        .badge {
+            padding: 0.35rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .badge-pending {
+            background-color: #ffeaa7;
+            color: #d35400;
+        }
+        
+        .badge-registered {
+            background-color: #d6eaf8;
+            color: #2980b9;
+        }
+        
+        .badge-assigned {
+            background-color: #d1f2eb;
+            color: #27ae60;
+        }
+        
+        .badge-checkedout {
+            background-color: #fdebd0;
+            color: #e67e22;
+        }
+        
+        .badge-available {
+            background-color: #d1f2eb;
+            color: #27ae60;
+        }
+        
+        /* Search and Filter */
+        .search-filter {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Material Grid */
+        .material-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .material-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .material-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .material-header {
+            padding: 1rem;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .material-id {
+            font-weight: bold;
+        }
+        
+        .material-body {
+            padding: 1.5rem;
+        }
+        
+        .material-status {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        /* Theme Controls */
+        .theme-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 99;
+            width: 200px;
+            transform: translateX(150px);
+            transition: transform 0.3s ease;
+        }
+        
+        .theme-controls:hover {
+            transform: translateX(0);
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            left: -40px;
+            top: 15px;
+            background: var(--card-bg);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .color-option {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 99;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .search-filter {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .material-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+            }
+            
+            nav ul li {
+                margin: 0.5rem;
+            }
+            
+            .theme-controls {
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+
+        /* Menu Toggle Button (for mobile) */
+        .menu-toggle {
+            display: none;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem;
+            cursor: pointer;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+        
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-boxes"></i> Materials Management System
+            </div>
+            <div class="user-info">
+                <span class="user-role">Admin</span>
+                <span>Admin User</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                    <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-content">
+                <h3>Admin Menu</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="#" class="nav-link" data-page="materials"><i class="fas fa-box"></i> <span>All Materials</span></a></li>
+                    <li><a href="#" class="nav-link" data-page="students"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="#" class="nav-link" data-page="checkout"><i class="fas fa-sign-out-alt"></i> <span>Check Out</span></a></li>
+                    <li><a href="#" class="nav-link" data-page="external"><i class="fas fa-truck"></i> <span>External Requests</span></a></li>
+                    <li><a href="#" class="nav-link" data-page="reports"><i class="fas fa-chart-bar"></i> <span>Reports</span></a></li>
+                </ul>
+                
+                <h3 style="margin-top: 2rem;">Quick Actions</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="nav-link" data-page="add-material"><i class="fas fa-plus-circle"></i> <span>Add Material</span></a></li>
+                    <li><a href="#"><i class="fas fa-file-export"></i> <span>Export Data</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> <span>System Settings</span></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Dashboard Page -->
+            <div class="page-content active" id="dashboard">
+                <h1>Admin Dashboard</h1>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Total Materials</h3>
+                            <i class="fas fa-boxes" style="color: var(--primary);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">1,248</div>
+                            <p>Registered in system</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Materials in Stock</h3>
+                            <i class="fas fa-warehouse" style="color: var(--success);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">856</div>
+                            <p>Available for assignment</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Assigned Materials</h3>
+                            <i class="fas fa-hand-holding" style="color: var(--warning);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">324</div>
+                            <p>Currently with students</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Pending Checkouts</h3>
+                            <i class="fas fa-truck-loading" style="color: var(--danger);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">18</div>
+                            <p>Awaiting approval</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Activities</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>Student</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Laptop Computer (MAT-001245)</td>
+                                        <td>John Smith (S12345)</td>
+                                        <td>2023-10-15</td>
+                                        <td>Checked Out</td>
+                                        <td><span class="badge badge-checkedout">Outside</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Microscope (MAT-001238)</td>
+                                        <td>Sarah Johnson (S12346)</td>
+                                        <td>2023-10-14</td>
+                                        <td>Returned</td>
+                                        <td><span class="badge badge-available">In Stock</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Engineering Toolkit (MAT-001187)</td>
+                                        <td>Michael Brown (S12347)</td>
+                                        <td>2023-10-10</td>
+                                        <td>Assigned</td>
+                                        <td><span class="badge badge-assigned">Assigned</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Materials Page -->
+            <div class="page-content" id="materials">
+                <h1>All Materials</h1>
+                
+                <div class="search-filter">
+                    <div class="form-group">
+                        <label for="material-search">Search Materials</label>
+                        <input type="text" id="material-search" placeholder="Search by name, ID, or category...">
+                    </div>
+                    <div class="form-group">
+                        <label for="status-filter">Filter by Status</label>
+                        <select id="status-filter">
+                            <option value="">All Statuses</option>
+                            <option value="available">Available</option>
+                            <option value="assigned">Assigned</option>
+                            <option value="checkedout">Checked Out</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="category-filter">Filter by Category</label>
+                        <select id="category-filter">
+                            <option value="">All Categories</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="books">Books & Publications</option>
+                            <option value="lab">Lab Equipment</option>
+                            <option value="tools">Tools</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="tabs">
+                    <div class="tab active" data-view="grid">Grid View</div>
+                    <div class="tab" data-view="table">Table View</div>
+                </div>
+                
+                <!-- Grid View -->
+                <div class="material-grid" id="grid-view">
+                    <div class="material-card">
+                        <div class="material-header">
+                            <span class="material-id">MAT-001245</span>
+                            <span class="badge badge-assigned">Assigned</span>
+                        </div>
+                        <div class="material-body">
+                            <h3>Dell Laptop XPS 15</h3>
+                            <p>High-performance laptop for engineering students</p>
+                            <div class="material-status">
+                                <span>Assigned to: John Smith</span>
+                                <span>Due: 2023-11-15</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-card">
+                        <div class="material-header">
+                            <span class="material-id">MAT-001238</span>
+                            <span class="badge badge-available">Available</span>
+                        </div>
+                        <div class="material-body">
+                            <h3>Advanced Microscope</h3>
+                            <p>Biology lab microscope with 1000x magnification</p>
+                            <div class="material-status">
+                                <span>In stock</span>
+                                <span>Added: 2023-09-20</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-card">
+                        <div class="material-header">
+                            <span class="material-id">MAT-001201</span>
+                            <span class="badge badge-checkedout">Checked Out</span>
+                        </div>
+                        <div class="material-body">
+                            <h3>Research Books</h3>
+                            <p>Collection of advanced physics research books</p>
+                            <div class="material-status">
+                                <span>Checked out by: Sarah Johnson</span>
+                                <span>Due: 2023-10-19</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Table View -->
+                <div class="table-container" id="table-view" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Material ID</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Assigned To</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>MAT-001245</td>
+                                <td>Dell Laptop XPS 15</td>
+                                <td>Electronics</td>
+                                <td><span class="badge badge-assigned">Assigned</span></td>
+                                <td>John Smith (S12345)</td>
+                                <td>CS Lab</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 0.35rem 0.5rem;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>MAT-001238</td>
+                                <td>Advanced Microscope</td>
+                                <td>Lab Equipment</td>
+                                <td><span class="badge badge-available">Available</span></td>
+                                <td>-</td>
+                                <td>Biology Lab</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 0.35rem 0.5rem;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>MAT-001201</td>
+                                <td>Research Books</td>
+                                <td>Books</td>
+                                <td><span class="badge badge-checkedout">Checked Out</span></td>
+                                <td>Sarah Johnson (S12346)</td>
+                                <td>Outside</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 0.35rem 0.5rem;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Students Page -->
+            <div class="page-content" id="students">
+                <h1>Student Management</h1>
+                
+                <div class="search-filter">
+                    <div class="form-group">
+                        <label for="student-search">Search Students</label>
+                        <input type="text" id="student-search" placeholder="Search by name, ID, or program...">
+                    </div>
+                    <div class="form-group">
+                        <label for="intake-filter">Filter by Intake</label>
+                        <select id="intake-filter">
+                            <option value="">All Intakes</option>
+                            <option value="2023-01">2023-01</option>
+                            <option value="2023-02">2023-02</option>
+                            <option value="2022-03">2022-03</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="program-filter">Filter by Program</label>
+                        <select id="program-filter">
+                            <option value="">All Programs</option>
+                            <option value="cs">Computer Science</option>
+                            <option value="ee">Electrical Engineering</option>
+                            <option value="me">Mechanical Engineering</option>
+                            <option value="ce">Civil Engineering</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Student List</h2>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Student
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Intake</th>
+                                        <th>Program</th>
+                                        <th>Assigned Materials</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>S12345</td>
+                                        <td>John Smith</td>
+                                        <td>2023-01</td>
+                                        <td>Computer Science</td>
+                                        <td>3</td>
+                                        <td><span class="badge badge-assigned">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-primary" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>S12346</td>
+                                        <td>Sarah Johnson</td>
+                                        <td>2023-01</td>
+                                        <td>Electrical Engineering</td>
+                                        <td>2</td>
+                                        <td><span class="badge badge-assigned">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-primary" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>S12347</td>
+                                        <td>Michael Brown</td>
+                                        <td>2023-02</td>
+                                        <td>Mechanical Engineering</td>
+                                        <td>1</td>
+                                        <td><span class="badge badge-assigned">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-primary" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Check Out Page -->
+            <div class="page-content" id="checkout">
+                <h1>Material Check Out</h1>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Check Out Materials</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="checkout-student">Select Student</label>
+                            <select id="checkout-student">
+                                <option value="">Select a student</option>
+                                <option value="S12345">John Smith (S12345)</option>
+                                <option value="S12346">Sarah Johnson (S12346)</option>
+                                <option value="S12347">Michael Brown (S12347)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="checkout-material">Select Material to Check Out</label>
+                            <select id="checkout-material">
+                                <option value="">Select a material</option>
+                                <option value="MAT-001243">MAT-001243 - Computer Parts</option>
+                                <option value="MAT-001242">MAT-001242 - Art Supplies</option>
+                                <option value="MAT-001241">MAT-001241 - Engineering Tools</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="checkout-reason">Reason for Check Out</label>
+                            <select id="checkout-reason">
+                                <option value="">Select reason</option>
+                                <option value="project">Project Work</option>
+                                <option value="research">Research</option>
+                                <option value="repair">Repair/Maintenance</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="checkout-notes">Additional Notes</label>
+                            <textarea id="checkout-notes" rows="3" placeholder="Any additional information"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="checkout-return">Expected Return Date</label>
+                            <input type="date" id="checkout-return" required>
+                        </div>
+                        
+                        <button class="btn btn-success">
+                            <i class="fas fa-check-circle"></i> Approve Check Out
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Pending Check Out Requests</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Material</th>
+                                        <th>Request Date</th>
+                                        <th>Reason</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>John Smith (S12345)</td>
+                                        <td>Laptop Computer (MAT-001245)</td>
+                                        <td>2023-10-15</td>
+                                        <td>Project Work</td>
+                                        <td>
+                                            <button class="btn btn-success" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-danger" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sarah Johnson (S12346)</td>
+                                        <td>Microscope (MAT-001238)</td>
+                                        <td>2023-10-14</td>
+                                        <td>Research</td>
+                                        <td>
+                                            <button class="btn btn-success" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-danger" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- External Requests Page -->
+            <div class="page-content" id="external">
+                <h1>External Material Requests</h1>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Approve External Requests</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Material</th>
+                                        <th>Request Date</th>
+                                        <th>Destination</th>
+                                        <th>Purpose</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>John Smith (S12345)</td>
+                                        <td>Laptop Computer (MAT-001245)</td>
+                                        <td>2023-10-15</td>
+                                        <td>Home</td>
+                                        <td>Project Work</td>
+                                        <td>
+                                            <button class="btn btn-success" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-danger" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sarah Johnson (S12346)</td>
+                                        <td>Microscope (MAT-001238)</td>
+                                        <td>2023-10-14</td>
+                                        <td>Research Lab</td>
+                                        <td>External Research</td>
+                                        <td>
+                                            <button class="btn btn-success" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-danger" style="padding: 0.35rem 0.5rem;">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other pages would go here with similar structure -->
+            <div class="page-content" id="reports">
+                <h1>Reports & Analytics</h1>
+                <p>This page would contain reporting functionality.</p>
+            </div>
+
+            <div class="page-content" id="add-material">
+                <h1>Add New Material</h1>
+                <p>This page would contain a form to add new materials.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Controls -->
+    <div class="theme-controls">
+        <div class="theme-toggle">
+            <i class="fas fa-palette"></i>
+        </div>
+        <h4>Theme Settings</h4>
+        <div class="theme-option">
+            <label>
+                <input type="checkbox" id="dark-mode-toggle"> Dark Mode
+            </label>
+        </div>
+        
+        <h4 style="margin-top: 15px;">Header Color</h4>
+        <div class="color-options">
+            <div class="color-option" style="background-color: #2c3e50;" data-target="header" data-color="#2c3e50"></div>
+            <div class="color-option" style="background-color: #9b59b6;" data-target="header" data-color="#9b59b6"></div>
+            <div class="color-option" style="background-color: #1abc9c;" data-target="header" data-color="#1abc9c"></div>
+            <div class="color-option" style="background-color: #e74c3c;" data-target="header" data-color="#e74c3c"></div>
+        </div>
+        
+        <h4 style="margin-top: 15px;">Sidebar Color</h4>
+        <div class="color-options">
+            <div class="color-option" style="background-color: #ffffff;" data-target="sidebar" data-color="#ffffff"></div>
+            <div class="color-option" style="background-color: #f1f5f9;" data-target="sidebar" data-color="#f1f5f9"></div>
+            <div class="color-option" style="background-color: #252525;" data-target="sidebar" data-color="#252525"></div>
+            <div class="color-option" style="background-color: #1a1a1a;" data-target="sidebar" data-color="#1a1a1a"></div>
+        </div>
+    </div>
+
+    <!-- Mobile menu toggle -->
+    <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation functionality
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pageContents = document.querySelectorAll('.page-content');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    
+                    // Update active navigation link
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show the corresponding page content
+                    pageContents.forEach(page => page.classList.remove('active'));
+                    document.getElementById(pageId).classList.add('active');
+                    
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth < 992) {
+                        document.querySelector('.sidebar').classList.remove('active');
+                    }
+                });
+            });
+            
+            // Tab functionality for materials page
+            const tabs = document.querySelectorAll('.tab');
+            const gridView = document.getElementById('grid-view');
+            const tableView = document.getElementById('table-view');
+            
+            if (tabs.length > 0) {
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        const viewType = this.getAttribute('data-view');
+                        
+                        // Toggle active class
+                        tabs.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // Show the selected view
+                        if (viewType === 'grid') {
+                            if (gridView) gridView.style.display = 'grid';
+                            if (tableView) tableView.style.display = 'none';
+                        } else {
+                            if (gridView) gridView.style.display = 'none';
+                            if (tableView) tableView.style.display = 'block';
+                        }
+                    });
+                });
+            }
+            
+            // Form submission
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Form submitted successfully!');
+                    this.reset();
+                });
+            });
+            
+            // Theme toggle functionality
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            
+            darkModeToggle.addEventListener('change', function() {
+                document.body.classList.toggle('dark-mode', this.checked);
+            });
+            
+            // Color option functionality
+            const colorOptions = document.querySelectorAll('.color-option');
+            
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    const color = this.getAttribute('data-color');
+                    
+                    if (target === 'header') {
+                        document.documentElement.style.setProperty('--header-bg', color);
+                    } else if (target === 'sidebar') {
+                        document.documentElement.style.setProperty('--sidebar-bg', color);
+                        
+                        // Adjust text color based on background brightness
+                        const rgb = parseInt(color.substring(1), 16);
+                        const r = (rgb >> 16) & 0xff;
+                        const g = (rgb >> 8) & 0xff;
+                        const b = (rgb >> 0) & 0xff;
+                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                        
+                        if (brightness > 125) {
+                            document.documentElement.style.setProperty('--sidebar-text', '#333');
+                        } else {
+                            document.documentElement.style.setProperty('--sidebar-text', '#f0f0f0');
+                        }
+                    }
+                });
+            });
+            
+            // Mobile menu toggle
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Set default date for expected return (7 days from now)
+            const today = new Date();
+            const nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+            const returnDateInput = document.getElementById('checkout-return');
+            if (returnDateInput) {
+                returnDateInput.valueAsDate = nextWeek;
+            }
+        });
+    </script>
+</body>
+</html>

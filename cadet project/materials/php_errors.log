@@ -1,0 +1,6 @@
+[08-Oct-2025 14:48:54 Europe/Berlin] Mark taken requested for material ID: 35
+[08-Oct-2025 14:48:54 Europe/Berlin] Proceeding with mark_taken for material ID: 35
+[08-Oct-2025 14:48:54 Europe/Berlin] PHP Warning:  Undefined variable $affected_rows in C:\xampp\htdocs\materials\gatekeeper-dashboard.php on line 182
+[08-Oct-2025 14:48:54 Europe/Berlin] Using query with taken_date
+[08-Oct-2025 14:48:54 Europe/Berlin] Update executed. Affected rows: 1
+[08-Oct-2025 14:48:54 Europe/Berlin] Verified new status: taken_outside

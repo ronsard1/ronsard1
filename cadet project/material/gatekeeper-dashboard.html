@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatekeeper Dashboard - Materials Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --sidebar-width: 250px;
+            --header-bg: var(--secondary);
+            --sidebar-bg: #ffffff;
+            --sidebar-text: #333333;
+            --content-bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+
+        .dark-mode {
+            --header-bg: #1a1a1a;
+            --sidebar-bg: #252525;
+            --sidebar-text: #f0f0f0;
+            --content-bg: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #f0f0f0;
+            --border-color: #444444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--content-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-role {
+            background-color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-right: 1rem;
+            font-size: 0.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        nav ul li a i {
+            margin-right: 5px;
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+        
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            margin-top: 68px; /* Header height */
+            min-height: calc(100vh - 68px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 68px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            z-index: 90;
+        }
+        
+        .sidebar-content {
+            padding: 1.5rem 1rem;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            color: var(--sidebar-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-menu a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Content Area */
+        .content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+        }
+        
+        /* Page content */
+        .page-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .page-content.active {
+            display: block;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* Form Styles */
+        .form-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: rgba(0,0,0,0.05);
+            font-weight: 600;
+        }
+        
+        tr {
+            transition: background-color 0.3s;
+        }
+        
+        tr:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+        
+        /* Theme Controls */
+        .theme-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 99;
+            width: 200px;
+            transform: translateX(150px);
+            transition: transform 0.3s ease;
+        }
+        
+        .theme-controls:hover {
+            transform: translateX(0);
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            left: -40px;
+            top: 15px;
+            background: var(--card-bg);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .color-option {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Status badges */
+        .badge {
+            padding: 0.35rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .badge-pending {
+            background-color: #ffeaa7;
+            color: #d35400;
+        }
+        
+        .badge-registered {
+            background-color: #d6eaf8;
+            color: #2980b9;
+        }
+        
+        .badge-assigned {
+            background-color: #d1f2eb;
+            color: #27ae60;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 99;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+            }
+            
+            nav ul li {
+                margin: 0.5rem;
+            }
+            
+            .theme-controls {
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+
+        /* Menu Toggle Button (for mobile) */
+        .menu-toggle {
+            display: none;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem;
+            cursor: pointer;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+        
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-boxes"></i> Materials Management System
+            </div>
+            <div class="user-info">
+                <span class="user-role">Gatekeeper</span>
+                <span>Robert Johnson</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                    <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-content">
+                <h3>Gatekeeper Menu</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="#" class="nav-link" data-page="register"><i class="fas fa-clipboard-list"></i> <span>Register Materials</span></a></li>
+                    <li><a href="#" class="nav-link" data-page="assign"><i class="fas fa-user-check"></i> <span>Assign to Student</span></a></li>
+                    <li><a href="#" class="nav-link" data-page="checkout"><i class="fas fa-sign-out-alt"></i> <span>Check Out</span></a></li>
+                    <li><a href="#" class="nav-link" data-page="history"><i class="fas fa-history"></i> <span>History</span></a></li>
+                </ul>
+                
+                <h3 style="margin-top: 2rem;">Quick Actions</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="nav-link" data-page="scan"><i class="fas fa-barcode"></i> <span>Scan Barcode</span></a></li>
+                    <li><a href="#"><i class="fas fa-print"></i> <span>Print Labels</span></a></li>
+                    <li><a href="#"><i class="fas fa-file-export"></i> <span>Generate Report</span></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Dashboard Page -->
+            <div class="page-content active" id="dashboard">
+                <h1>Gatekeeper Dashboard</h1>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Materials to Register</h3>
+                            <i class="fas fa-clipboard-list" style="color: var(--warning);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">12</div>
+                            <p>Awaiting registration</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Pending Assignment</h3>
+                            <i class="fas fa-user-check" style="color: var(--primary);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">8</div>
+                            <p>Need to be assigned to students</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Checkout Requests</h3>
+                            <i class="fas fa-sign-out-alt" style="color: var(--danger);"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat">5</div>
+                            <p>Waiting for approval</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Activities</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>Student</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Laptop Computer (MAT-001245)</td>
+                                        <td>John Smith (S12345)</td>
+                                        <td>2023-10-15</td>
+                                        <td>Assigned</td>
+                                        <td><span class="badge badge-assigned">Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Microscope (MAT-001238)</td>
+                                        <td>Sarah Johnson (S12346)</td>
+                                        <td>2023-10-14</td>
+                                        <td>Assigned</td>
+                                        <td><span class="badge badge-assigned">Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Engineering Toolkit (MAT-001187)</td>
+                                        <td>Michael Brown (S12347)</td>
+                                        <td>2023-10-10</td>
+                                        <td>Checked Out</td>
+                                        <td><span class="badge badge-pending">Pending Return</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Register Materials Page -->
+            <div class="page-content" id="register">
+                <h1>Register New Materials</h1>
+                
+                <div class="form-container">
+                    <h2>Material Information</h2>
+                    <form id="material-form">
+                        <div class="form-group">
+                            <label for="material-name">Material Name</label>
+                            <input type="text" id="material-name" placeholder="e.g., Laptop, Textbook, Lab Equipment" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="material-desc">Description</label>
+                            <textarea id="material-desc" rows="3" placeholder="Detailed description of the material"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="material-category">Category</label>
+                            <select id="material-category" required>
+                                <option value="">Select Category</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="books">Books & Publications</option>
+                                <option value="lab">Lab Equipment</option>
+                                <option value="tools">Tools</option>
+                                <option value="sports">Sports Equipment</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="material-quantity">Quantity</label>
+                            <input type="number" id="material-quantity" min="1" value="1" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="barcode">Barcode Number (Optional)</label>
+                            <input type="text" id="barcode" placeholder="Scan or enter barcode">
+                        </div>
+                        
+                        <h2 style="margin-top: 2rem;">Supplier Information</h2>
+                        
+                        <div class="form-group">
+                            <label for="supplier-name">Supplier Name</label>
+                            <input type="text" id="supplier-name" placeholder="Name of company or person" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="supplier-contact">Supplier Contact</label>
+                            <input type="text" id="supplier-contact" placeholder="Phone or email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="delivery-date">Delivery Date</label>
+                            <input type="date" id="delivery-date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Additional Notes</label>
+                            <textarea id="notes" rows="3" placeholder="Any additional information about the delivery"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check-circle"></i> Register Material
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Assign to Student Page -->
+            <div class="page-content" id="assign">
+                <h1>Assign Materials to Student</h1>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Select Student</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="student-search">Search Students</label>
+                            <input type="text" id="student-search" placeholder="Search by name, ID, or intake...">
+                        </div>
+                        
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Intake</th>
+                                        <th>Program</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="radio" name="student" value="S12345"></td>
+                                        <td>S12345</td>
+                                        <td>John Smith</td>
+                                        <td>2023-01</td>
+                                        <td>Computer Science</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="radio" name="student" value="S12346"></td>
+                                        <td>S12346</td>
+                                        <td>Sarah Johnson</td>
+                                        <td>2023-01</td>
+                                        <td>Electrical Engineering</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="radio" name="student" value="S12347"></td>
+                                        <td>S12347</td>
+                                        <td>Michael Brown</td>
+                                        <td>2023-02</td>
+                                        <td>Mechanical Engineering</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Select Material</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="material-select">Available Materials</label>
+                            <select id="material-select">
+                                <option value="">Select a material</option>
+                                <option value="MAT-001243">MAT-001243 - Computer Parts</option>
+                                <option value="MAT-001242">MAT-001242 - Art Supplies</option>
+                                <option value="MAT-001241">MAT-001241 - Engineering Tools</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="expected-return">Expected Return Date</label>
+                            <input type="date" id="expected-return" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="assignment-notes">Assignment Notes</label>
+                            <textarea id="assignment-notes" rows="3" placeholder="Any special instructions"></textarea>
+                        </div>
+                        
+                        <button class="btn btn-primary">
+                            <i class="fas fa-user-check"></i> Assign Material
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other pages would go here with similar structure -->
+            <div class="page-content" id="checkout">
+                <h1>Check Out Materials</h1>
+                <p>This page would contain the check-out functionality.</p>
+            </div>
+
+            <div class="page-content" id="history">
+                <h1>History Log</h1>
+                <p>This page would show the history of all transactions.</p>
+            </div>
+
+            <div class="page-content" id="scan">
+                <h1>Scan Barcode</h1>
+                <p>This page would contain barcode scanning functionality.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Controls -->
+    <div class="theme-controls">
+        <div class="theme-toggle">
+            <i class="fas fa-palette"></i>
+        </div>
+        <h4>Theme Settings</h4>
+        <div class="theme-option">
+            <label>
+                <input type="checkbox" id="dark-mode-toggle"> Dark Mode
+            </label>
+        </div>
+        
+        <h4 style="margin-top: 15px;">Header Color</h4>
+        <div class="color-options">
+            <div class="color-option" style="background-color: #2c3e50;" data-target="header" data-color="#2c3e50"></div>
+            <div class="color-option" style="background-color: #9b59b6;" data-target="header" data-color="#9b59b6"></div>
+            <div class="color-option" style="background-color: #1abc9c;" data-target="header" data-color="#1abc9c"></div>
+            <div class="color-option" style="background-color: #e74c3c;" data-target="header" data-color="#e74c3c"></div>
+        </div>
+        
+        <h4 style="margin-top: 15px;">Sidebar Color</h4>
+        <div class="color-options">
+            <div class="color-option" style="background-color: #ffffff;" data-target="sidebar" data-color="#ffffff"></div>
+            <div class="color-option" style="background-color: #f1f5f9;" data-target="sidebar" data-color="#f1f5f9"></div>
+            <div class="color-option" style="background-color: #252525;" data-target="sidebar" data-color="#252525"></div>
+            <div class="color-option" style="background-color: #1a1a1a;" data-target="sidebar" data-color="#1a1a1a"></div>
+        </div>
+    </div>
+
+    <!-- Mobile menu toggle -->
+    <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation functionality
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pageContents = document.querySelectorAll('.page-content');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    
+                    // Update active navigation link
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show the corresponding page content
+                    pageContents.forEach(page => page.classList.remove('active'));
+                    document.getElementById(pageId).classList.add('active');
+                    
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth < 992) {
+                        document.querySelector('.sidebar').classList.remove('active');
+                    }
+                });
+            });
+            
+            // Form submission
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Form submitted successfully!');
+                    this.reset();
+                });
+            });
+            
+            // Theme toggle functionality
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            
+            darkModeToggle.addEventListener('change', function() {
+                document.body.classList.toggle('dark-mode', this.checked);
+            });
+            
+            // Color option functionality
+            const colorOptions = document.querySelectorAll('.color-option');
+            
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    const color = this.getAttribute('data-color');
+                    
+                    if (target === 'header') {
+                        document.documentElement.style.setProperty('--header-bg', color);
+                    } else if (target === 'sidebar') {
+                        document.documentElement.style.setProperty('--sidebar-bg', color);
+                        
+                        // Adjust text color based on background brightness
+                        const rgb = parseInt(color.substring(1), 16);
+                        const r = (rgb >> 16) & 0xff;
+                        const g = (rgb >> 8) & 0xff;
+                        const b = (rgb >> 0) & 0xff;
+                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                        
+                        if (brightness > 125) {
+                            document.documentElement.style.setProperty('--sidebar-text', '#333');
+                        } else {
+                            document.documentElement.style.setProperty('--sidebar-text', '#f0f0f0');
+                        }
+                    }
+                });
+            });
+            
+            // Mobile menu toggle
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Set default date for expected return (7 days from now)
+            const today = new Date();
+            const nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+            document.getElementById('expected-return').valueAsDate = nextWeek;
+            document.getElementById('delivery-date').valueAsDate = today;
+        });
+    </script>
+</body>
+</html>
