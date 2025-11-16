@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Background Image Example</title>
+    <link href="mastyle/style.css" rel="stylesheet">
+    <style>
+        /* CSS styles for the greeting form */
+        
+        .greeting-form {
+            position: fixed;
+            top: 50%;
+            right: 310px;
+            transform: translate(50%, -50%);
+            background-color: #8e8fc0;
+            padding: 20px;
+            border-radius: 70px;
+            animation-name: moveMessage;
+            animation-duration: 20s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+        }
+        
+        .greeting-message {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes moveMessage {
+            0% {
+                transform: translate(40%, -70%);
+            }
+            25% {
+                transform: translate(30%, -40%);
+            }
+            50% {
+                transform: translate(60%, -30%);
+            }
+            75% {
+                transform: translate(30%, -40%);
+            }
+            100% {
+                transform: translate(40%, -70%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="body">
+        <div class="navbar">
+            <img src="" class="logo">
+            <ul>
+                <li><a href="">HOME</a></li>
+                <li><a href="Services/indexservices.html">ABOUT</a></li>
+                <li><a href="indexcontact.html">CONTACT</a></li>
+                <li><a href="Services/indexservices.html">SERVICES</a></li>
+
+            </ul>
+        </div>
+        <div class="content">
+            <h1>Digitizing Military's — <br>Education And <br>Training Systems</h1>
+            <p>We envision where every Military school in Africa has all of its academic;<br> non-academic and training activities and processes digitized.</p>
+            <div>
+                <button type="button" onclick="location.href='admin-login.php'"><span></span>Admin Login</button>
+                <button type="button" onclick="location.href='gatekeeper-login.php'"><span></span>Gate Keeper Login</button>
+                 <button type="button" onclick="location.href='student-login.php'"><span></span>Student Login</button>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="greeting-form">
+        <p class="greeting-message" id="greetingMessage"></p>
+    </div>
+
+    <script>
+        // Get the current hour
+        var currentHour = new Date().getHours();
+
+        // Get the greeting message based on the current hour
+        var greetingMessage;
+        if (currentHour < 12) {
+            greetingMessage = "Good morning";
+        } else if (currentHour < 18) {
+            greetingMessage = "Good afternoon";
+        } else {
+            greetingMessage = "Good evening";
+        }
+
+        // Set the greeting message
+        var greetingElement = document.getElementById("greetingMessage");
+        greetingElement.textContent = greetingMessage + ", welcome to our web application";
+    </script>
+</body>
+
+</html>
